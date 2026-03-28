@@ -4,68 +4,74 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class PostController extends Controller
 {
-
-    public function index(){
+    public function index(): Response
+    {
         $posts = Post::where('user_id', auth()->id())->latest()->get();
-        return view('welcome', compact('posts'));
+
+        return Inertia::render('Notes/Index', [
+            'posts' => $posts,
+        ]);
     }
 
-    
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validated = $request->validate([
-            'title' => 'required',
-            'body'  => 'required'
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
         ]);
-
-        $validated['title'] = strip_tags($validated['title']);
-        $validated['body'] = strip_tags($validated['body']);
-        $validated['user_id'] = auth()->id();
 
         Post::create([
-            'title' => $validated['title'],
-            'body' => $validated['body'],
-            'user_id' => auth()->id()
+            'title' => strip_tags($validated['title']),
+            'body' => strip_tags($validated['body']),
+            'user_id' => auth()->id(),
         ]);
-        
-        return redirect('/')->with('success', 'Post Added Succesfully');
+
+        return redirect()->route('notes.index')->with('success', 'Note saved.');
     }
 
-    public function edit(Post $post){
-        if ($post->user_id !== auth()->id()){
+    public function edit(Post $post): Response
+    {
+        if ($post->user_id !== auth()->id()) {
             abort(403);
         }
 
-        return view('edit', compact('post'));
+        return Inertia::render('Notes/Edit', [
+            'post' => $post,
+        ]);
     }
 
-    public function update(Request $request, Post $post){
-        if ($post->user_id !== auth()->id()){
+    public function update(Request $request, Post $post)
+    {
+        if ($post->user_id !== auth()->id()) {
             abort(403);
         }
 
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required'
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
         ]);
 
         $post->update([
-            'title' => strip_tags($request->title),
-            'body' => strip_tags($request->body)
+            'title' => strip_tags($validated['title']),
+            'body' => strip_tags($validated['body']),
         ]);
 
-        return redirect('/')->with('success', "Post Updated");
+        return redirect()->route('notes.index')->with('success', 'Note updated.');
     }
 
-    public function destroy(Post $post){
-        if ($post->user_id !== auth()->id()){
+    public function destroy(Post $post)
+    {
+        if ($post->user_id !== auth()->id()) {
             abort(403);
         }
 
         $post->delete();
-        return redirect('/')->with('success', "Post deleted!");
-    }
 
+        return redirect()->route('notes.index')->with('success', 'Note deleted.');
+    }
 }

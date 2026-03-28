@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'd4383e69f7098e30b5448b8e7208a86c68b4e367',
+        'reference' => '3010d3398057cc1d67e0366e18568580e3f33e7b',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -370,6 +370,15 @@
                 0 => 'v12.18.0',
             ),
         ),
+        'inertiajs/inertia-laravel' => array(
+            'pretty_version' => 'v3.0.1',
+            'version' => '3.0.1.0',
+            'reference' => '4675331c428c0f77b2539684835c5e0fd27ee023',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../inertiajs/inertia-laravel',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'kodova/hamcrest-php' => array(
             'dev_requirement' => true,
             'replaced' => array(
@@ -388,7 +397,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'd4383e69f7098e30b5448b8e7208a86c68b4e367',
+            'reference' => '3010d3398057cc1d67e0366e18568580e3f33e7b',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -429,6 +438,15 @@
             'install_path' => __DIR__ . '/../laravel/sail',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'laravel/sanctum' => array(
+            'pretty_version' => 'v4.2.1',
+            'version' => '4.2.1.0',
+            'reference' => 'f5fb373be39a246c74a060f2cf2ae2c2145b3664',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../laravel/sanctum',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'laravel/serializable-closure' => array(
             'pretty_version' => 'v2.0.4',

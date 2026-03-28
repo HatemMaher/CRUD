@@ -2,23 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use auth;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-
+use Inertia\Inertia;
+use Inertia\Response;
 
 class UserController extends Controller
 {
-    public function create(){
-        return view('register');
-    }   
+    public function create(): Response
+    {
+        return Inertia::render('Auth/Register');
+    }
 
-
-
-
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $validated = $request->validate([
             'name' => 'required|min:3|max:15',
             'email' => 'required|email|unique:users',
@@ -28,41 +26,40 @@ class UserController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
+            'password' => $validated['password'],
         ]);
 
         auth()->login($user);
 
-        return redirect('/login');
-
+        return redirect()->route('notes.index')->with('success', 'Welcome! Your account is ready.');
     }
- 
-    public function login(Request $request){
+
+    public function login(Request $request)
+    {
         $request->validate([
             'name' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         $user = User::where('name', $request->name)->first();
-        if ($user && Hash::check($request->password, $user->password)){
+        if ($user && Hash::check($request->password, $user->password)) {
             auth()->login($user);
-            return redirect('/')->with('success', 'Logged in successfully!');
-        }else{
-            return redirect('/login')->with('login_error', 'Invalid name or password!');
+
+            return redirect()->route('notes.index')->with('success', 'Signed in successfully.');
         }
 
-        return redirect('/');
+        return redirect()->route('login')->with('login_error', 'Invalid username or password.');
     }
 
-
-    public function showLogin(){
-        return view('login');
+    public function showLogin(): Response
+    {
+        return Inertia::render('Auth/Login');
     }
 
-
-    public function logout(){
+    public function logout()
+    {
         auth()->logout();
-        return redirect('/register')->with('success', 'Logged out successfully.');
-    }
 
+        return redirect()->route('login')->with('success', 'Signed out.');
+    }
 }
