@@ -1,6 +1,8 @@
 <script setup>
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import AppLayout from '../../Layouts/AppLayout.vue';
+import { ref } from 'vue';
+import ConfirmationModal from '../../Components/ConfirmationModal.vue';
 
 const props = defineProps({
     posts: Array,
@@ -12,6 +14,9 @@ const form = useForm({
     body: '',
 });
 
+const showDeleteModal = ref(false);
+const noteToDelete = ref(null);
+
 function createNote() {
     form.post('/notes', {
         preserveScroll: true,
@@ -19,9 +24,24 @@ function createNote() {
     });
 }
 
-function destroy(id) {
-    if (!confirm('Delete this note?')) return;
-    router.delete(`/notes/${id}`, { preserveScroll: true });
+function confirmDelete(id) {
+    noteToDelete.value = id;
+    showDeleteModal.value = true;
+}
+
+function destroy() {
+    router.delete(`/notes/${noteToDelete.value}`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteModal.value = false;
+            noteToDelete.value = null;
+        },
+    });
+}
+
+function closeDeleteModal() {
+    showDeleteModal.value = false;
+    noteToDelete.value = null;
 }
 
 function formatDate(iso) {
@@ -116,7 +136,7 @@ function formatDate(iso) {
                             <button
                                 type="button"
                                 class="inline-flex items-center justify-center rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-950/30"
-                                @click="destroy(post.id)"
+                                @click="confirmDelete(post.id)"
                             >
                                 Delete
                             </button>
@@ -125,5 +145,13 @@ function formatDate(iso) {
                 </li>
             </ul>
         </div>
+
+        <ConfirmationModal
+            :show="showDeleteModal"
+            title="Delete Note"
+            message="Are you sure you want to delete this note? This action cannot be undone."
+            @close="closeDeleteModal"
+            @confirm="destroy"
+        />
     </AppLayout>
 </template>
